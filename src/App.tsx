@@ -16,6 +16,8 @@ import { getAvailableSensors, getExtremeValues } from "./api";
 import { Loader2 } from "lucide-react";
 import { ExtremeValuesCard } from "./components/ExtremeValuesCard";
 import { ExtremeValue } from "./types";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 export default function App() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -60,8 +62,24 @@ export default function App() {
     loadExtremes();
   }, [dateRange, selectedSensor]);
 
+  // WebSocket для мгновенных оповещений
+  useEffect(() => {
+    const socket = new WebSocket("ws://26.148.34.69:8000/ws-alert");
+
+    socket.onopen = () => {
+      console.log("WebSocket connection established.");
+    };
+    socket.onmessage = (event) => {
+      console.log(event.data);
+      const data = JSON.parse(event.data);
+      toast(data.message);
+    };
+    return () => socket.close();
+  }, []);
+
   return (
     <div className="container mx-auto p-4">
+      <Toaster />
       <div className="mb-4 flex gap-2">
         <DatePickerWithRange onDateChange={setDateRange} />
         <Select
