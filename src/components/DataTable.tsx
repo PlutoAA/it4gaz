@@ -16,7 +16,6 @@ export function DataTable({
   limit,
   onPageChange,
   sensorId,
-  onSensorsLoaded,
 }: {
   page: number;
   limit: number;
@@ -37,12 +36,6 @@ export function DataTable({
           sensorId || undefined
         );
 
-        // Обновляем список доступных датчиков
-        const sensors = Array.from(
-          new Set(result.map((item) => item.sensor_id))
-        );
-        onSensorsLoaded(sensors);
-
         setData(result);
       } finally {
         setLoading(false);
@@ -50,7 +43,7 @@ export function DataTable({
     };
 
     fetchData();
-  }, [page, limit, sensorId, onSensorsLoaded]);
+  }, [page, limit, sensorId]);
 
   return (
     <div className="rounded-md border">

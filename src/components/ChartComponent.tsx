@@ -16,11 +16,9 @@ import { getSensorDataByDate } from "@/api";
 export function ChartComponent({
   dateRange,
   sensorId,
-  onSensorsLoaded,
 }: {
   dateRange?: DateRange;
   sensorId?: string;
-  onSensorsLoaded: (sensors: string[]) => void;
 }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,12 +35,6 @@ export function ChartComponent({
           sensorId || undefined
         );
 
-        // Обновляем список доступных датчиков
-        const sensors = Array.from(
-          new Set(result.map((item) => item.sensor_id))
-        );
-        onSensorsLoaded(sensors);
-
         setData(result);
       } finally {
         setLoading(false);
@@ -50,7 +42,7 @@ export function ChartComponent({
     };
 
     fetchData();
-  }, [dateRange, sensorId, onSensorsLoaded]);
+  }, [dateRange, sensorId]);
 
   if (loading) return <Skeleton className="h-[400px] w-full" />;
 

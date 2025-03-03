@@ -31,3 +31,8 @@ export const getSensorDataByPage = async (
   })
   return response.data
 }
+
+export const getAvailableSensors = async () => {
+  const response = await axios.get(`${API_BASE}/data/sensors`)
+  return response.data.sensors
+}
