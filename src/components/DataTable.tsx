@@ -11,39 +11,35 @@ import {
 import { Skeleton } from "./ui/skeleton";
 import { getSensorDataByPage } from "@/api";
 
-export function DataTable({
-  page,
-  limit,
-  onPageChange,
-  sensorId,
-}: {
-  page: number;
-  limit: number;
-  onPageChange: (page: number) => void;
-  sensorId?: string;
-  onSensorsLoaded: (sensors: string[]) => void;
-}) {
+export function DataTable({ page, limit, onPageChange, sensorId, dateRange }) {
   const [data, setData] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const result = await getSensorDataByPage(
+        const params = {
+          sensor_id: sensorId,
+          ...(dateRange?.from && { start_date: dateRange.from.toISOString() }),
+          ...(dateRange?.to && { end_date: dateRange.to.toISOString() }),
+        };
+
+        const { data: response, totalPages } = await getSensorDataByPage(
           page,
           limit,
-          sensorId || undefined
+          params
         );
-
-        setData(result);
+        setData(response.data);
+        setTotalPages(totalPages);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [page, limit, sensorId]);
+  }, [page, limit, sensorId, dateRange]);
 
   return (
     <div className="rounded-md border">

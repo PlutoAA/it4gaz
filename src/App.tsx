@@ -12,8 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select";
-import { getAvailableSensors } from "./api";
+import { getAvailableSensors, getExtremeValues } from "./api";
 import { Loader2 } from "lucide-react";
+import { ExtremeValuesCard } from "./components/ExtremeValuesCard";
 
 export default function App() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -22,6 +23,7 @@ export default function App() {
   const [selectedSensor, setSelectedSensor] = useState<string>("");
   const [availableSensors, setAvailableSensors] = useState<string[]>([]);
   const [sensorsLoading, setSensorsLoading] = useState(true);
+  const [extremeValues, setExtremeValues] = useState<ExtremeValues>();
 
   useEffect(() => {
     const loadSensors = async () => {
@@ -37,6 +39,25 @@ export default function App() {
 
     loadSensors();
   }, []);
+
+  useEffect(() => {
+    const loadExtremes = async () => {
+      if (!dateRange?.from || !dateRange?.to) return;
+
+      try {
+        const result = await getExtremeValues({
+          sensor_id: selectedSensor === "all" ? undefined : selectedSensor,
+          start_date: dateRange.from.toISOString(),
+          end_date: dateRange.to.toISOString(),
+        });
+        setExtremeValues(result);
+      } catch (error) {
+        console.error("Ошибка загрузки экстремальных значений:", error);
+      }
+    };
+
+    loadExtremes();
+  }, [dateRange, selectedSensor]);
 
   return (
     <div className="container mx-auto p-4">
@@ -75,6 +96,11 @@ export default function App() {
         </TabsList>
         <TabsContent value="chart">
           <ChartComponent dateRange={dateRange} sensorId={selectedSensor} />
+          <ExtremeValuesCard
+            data={extremeValues}
+            sensorId={selectedSensor === "all" ? undefined : selectedSensor}
+            dateRange={dateRange}
+          />
         </TabsContent>
         <TabsContent value="table">
           <DataTable
@@ -82,6 +108,7 @@ export default function App() {
             limit={limit}
             onPageChange={setPage}
             sensorId={selectedSensor}
+            dateRange={dateRange}
           />
         </TabsContent>
       </Tabs>
