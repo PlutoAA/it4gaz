@@ -15,6 +15,7 @@ import {
 import { getAvailableSensors, getExtremeValues } from "./api";
 import { Loader2 } from "lucide-react";
 import { ExtremeValuesCard } from "./components/ExtremeValuesCard";
+import { ExtremeValue } from "./types";
 
 export default function App() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -23,7 +24,7 @@ export default function App() {
   const [selectedSensor, setSelectedSensor] = useState<string>("");
   const [availableSensors, setAvailableSensors] = useState<string[]>([]);
   const [sensorsLoading, setSensorsLoading] = useState(true);
-  const [extremeValues, setExtremeValues] = useState<ExtremeValues>();
+  const [extremeValues, setExtremeValues] = useState<ExtremeValue>();
 
   useEffect(() => {
     const loadSensors = async () => {
@@ -45,11 +46,11 @@ export default function App() {
       if (!dateRange?.from || !dateRange?.to) return;
 
       try {
-        const result = await getExtremeValues({
-          sensor_id: selectedSensor === "all" ? undefined : selectedSensor,
-          start_date: dateRange.from.toISOString(),
-          end_date: dateRange.to.toISOString(),
-        });
+        const result = await getExtremeValues(
+          dateRange.from,
+          dateRange.to,
+          selectedSensor === "all" ? undefined : selectedSensor
+        );
         setExtremeValues(result);
       } catch (error) {
         console.error("Ошибка загрузки экстремальных значений:", error);

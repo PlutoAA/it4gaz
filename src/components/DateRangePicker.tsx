@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { format } from "date-fns";
+import { addDays, format } from "date-fns";
 
 import { useState } from "react";
 import { CalendarIcon } from "lucide-react";
@@ -16,7 +16,10 @@ export function DatePickerWithRange({
 }: {
   onDateChange: (range?: DateRange) => void;
 }) {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(2024, 0, 1),
+    to: addDays(new Date(2024, 0, 1), 2),
+  });
 
   return (
     <div className="flex gap-2">
@@ -48,10 +51,12 @@ export function DatePickerWithRange({
             mode="range"
             selected={dateRange}
             onSelect={(range) => {
+              console.log("RaNGR ", range);
               setDateRange(range);
               onDateChange(range);
             }}
             numberOfMonths={2}
+            defaultMonth={dateRange?.from}
           />
         </PopoverContent>
       </Popover>

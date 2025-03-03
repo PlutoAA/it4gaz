@@ -22,8 +22,8 @@ export function DataTable({ page, limit, onPageChange, sensorId, dateRange }) {
       try {
         const params = {
           sensor_id: sensorId,
-          ...(dateRange?.from && { start_date: dateRange.from.toISOString() }),
-          ...(dateRange?.to && { end_date: dateRange.to.toISOString() }),
+          ...(dateRange?.from && { start_date: dateRange.from }),
+          ...(dateRange?.to && { end_date: dateRange.to }),
         };
 
         const { data: response, totalPages } = await getSensorDataByPage(
@@ -60,7 +60,7 @@ export function DataTable({ page, limit, onPageChange, sensorId, dateRange }) {
             </TableRow>
           ) : (
             data.map((item) => (
-              <TableRow key={item.id}>
+              <TableRow key={`${item.timestamp}-${item.sensor_id}`}>
                 <TableCell>
                   {new Date(item.timestamp).toLocaleString()}
                 </TableCell>

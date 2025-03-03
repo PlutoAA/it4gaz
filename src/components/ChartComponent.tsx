@@ -27,14 +27,15 @@ export function ChartComponent({
     const fetchData = async () => {
       if (!dateRange?.from || !dateRange?.to) return;
 
+      console.log(dateRange);
       setLoading(true);
       try {
         const result = await getSensorDataByDate(
-          dateRange.from.toISOString().split("T")[0],
-          dateRange.to.toISOString().split("T")[0],
+          dateRange.from,
+          dateRange.to,
           sensorId || undefined
         );
-
+        console.log(result);
         setData(result);
       } finally {
         setLoading(false);

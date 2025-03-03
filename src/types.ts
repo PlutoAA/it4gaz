@@ -4,8 +4,6 @@ export interface DateRange {
 }
 
 export interface ExtremeValue {
-  period: string
-  sensor_id: string
   min: number
   max: number
 }
